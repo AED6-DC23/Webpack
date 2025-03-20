@@ -1,17 +1,31 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import './styles.css';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+const app = document.getElementById('app');
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+async function fetchPosts() {
+  try {
+    const response = await fetch('http://localhost:3001/posts');
+    const posts = await response.json();
+    
+    const postsList = posts.map(post => `
+      <div class="post">
+        <h2>${post.title}</h2>
+        <p>${post.content}</p>
+      </div>
+    `).join('');
+    
+    app.innerHTML = `
+      <h1>Посты из JSON-serverа</h1>
+      <div class="posts-container">${postsList}</div>
+    `;
+  } catch (error) {
+    app.innerHTML = `<p>Ошибка загрузки данных: ${error.message}</p>`;
+  }
+}
+
+fetchPosts();
+
+// Для Hot Module Replacement
+if (module.hot) {
+  module.hot.accept();
+}
